@@ -313,7 +313,7 @@ export default function App() {
     const iMean = mean([ni0, ni30, ni60, ni90, ni120]);
 
     // Table 1
-    const homaIR = safeDiv((ng0 ?? undefined) * (ni0 ?? undefined), 405);
+    const homaIR = ng0 !== undefined && ni0 !== undefined ? safeDiv(ng0 * ni0, 405) : undefined;
 
     // BMI-dependent cutoffs for HOMA-IR (from table)
     const homaIRCutoff = (() => {
