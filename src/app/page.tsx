@@ -573,41 +573,46 @@ export default function App() {
   }, [toolName, nAge, sex, ethnicity, bmi, ogttIndication, metabolicSyndrome, risk, step4, indices]);
 
   const printPage = () => {
-    // Basic print: open a new window with preformatted text.
-    const w = window.open("", "_blank", "noopener,noreferrer");
-    if (!w) return;
-    w.document.write(`<!doctype html><html><head><title>${toolName} – Summary</title>
-      <meta charset="utf-8"/>
-      <style>
-        body {
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-          padding: 40px;
-          line-height: 1.6;
-          color: #1e293b;
-          max-width: 800px;
-          margin: 0 auto;
-        }
-        h1 { font-size: 24px; margin-bottom: 8px; color: #0f172a; }
-        h2 { font-size: 16px; margin-top: 24px; margin-bottom: 8px; color: #334155; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
-        .section { margin-bottom: 16px; }
-        .label { font-weight: 600; color: #475569; }
-        .value { color: #1e293b; }
-        .warning { color: #b45309; font-weight: 600; }
-        .danger { color: #dc2626; font-weight: 600; }
-        .ok { color: #059669; }
-        ul { margin: 8px 0; padding-left: 20px; }
-        li { margin: 4px 0; }
-        .footer { margin-top: 32px; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 16px; }
-        @media print { body { padding: 20px; } }
-      </style>
-      </head><body>
-        <h1>${toolName}</h1>
-        <div style="color: #64748b; font-size: 14px; margin-bottom: 24px;">Generated: ${new Date().toLocaleString()}</div>
-        <pre style="white-space: pre-wrap; font-family: inherit; font-size: 14px;">${summary.replace(/</g, "&lt;")}</pre>
-        <div class="footer">This report is for clinical decision support only. No patient data is stored.</div>
-        <script>window.print();</script>
-      </body></html>`);
-    w.document.close();
+    const printContent = `<!DOCTYPE html>
+<html>
+<head>
+  <title>${toolName} - Summary</title>
+  <meta charset="utf-8"/>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 40px;
+      line-height: 1.6;
+      color: #1e293b;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 { font-size: 24px; margin-bottom: 8px; color: #0f172a; }
+    .timestamp { color: #64748b; font-size: 14px; margin-bottom: 24px; }
+    pre { white-space: pre-wrap; font-family: inherit; font-size: 14px; margin: 0; }
+    .footer { margin-top: 32px; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 16px; }
+    @media print { body { padding: 20px; } }
+  </style>
+</head>
+<body>
+  <h1>${toolName}</h1>
+  <div class="timestamp">Generated: ${new Date().toLocaleString()}</div>
+  <pre>${summary.replace(/</g, "&lt;")}</pre>
+  <div class="footer">This report is for clinical decision support only. No patient data is stored.</div>
+</body>
+</html>`;
+
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      alert("Please allow popups to print the summary.");
+      return;
+    }
+    printWindow.document.open();
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    printWindow.onload = () => {
+      printWindow.print();
+    };
   };
 
   const exportPDF = async () => {
@@ -788,7 +793,7 @@ export default function App() {
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
               <div className="rounded-2xl border border-slate-200 p-4">
                 <div className="text-sm font-semibold text-slate-900 mb-3">Glucose (mg/dL)</div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div className="flex flex-col gap-3">
                   <Field label="0 min" value={g0} onChange={setG0} />
                   <Field label="30 min" value={g30} onChange={setG30} />
                   <Field label="60 min" value={g60} onChange={setG60} />
@@ -799,7 +804,7 @@ export default function App() {
 
               <div className="rounded-2xl border border-slate-200 p-4">
                 <div className="text-sm font-semibold text-slate-900 mb-3">Insulin (mU/L)</div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div className="flex flex-col gap-3">
                   <Field label="0 min" value={i0} onChange={setI0} />
                   <Field label="30 min" value={i30} onChange={setI30} />
                   <Field label="60 min" value={i60} onChange={setI60} />
