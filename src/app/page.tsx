@@ -785,28 +785,28 @@ export default function App() {
           </Section>
 
           <Section title="OGTT inputs" subtitle="Glucose (mg/dL) and insulin (mU/L) at 0, 30, 60, 90, 120 minutes">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
               <div className="rounded-2xl border border-slate-200 p-4">
-                <div className="text-sm font-semibold text-slate-900">Glucose (mg/dL)</div>
-                <div className="mt-3 grid grid-cols-2 gap-3">
-                  <Field label="0 min" value={g0} onChange={setG0} unit="mg/dL" />
-                  <Field label="30 min" value={g30} onChange={setG30} unit="mg/dL" />
-                  <Field label="60 min" value={g60} onChange={setG60} unit="mg/dL" />
-                  <Field label="90 min" value={g90} onChange={setG90} unit="mg/dL" />
-                  <Field label="120 min" value={g120} onChange={setG120} unit="mg/dL" />
+                <div className="text-sm font-semibold text-slate-900 mb-3">Glucose (mg/dL)</div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  <Field label="0 min" value={g0} onChange={setG0} />
+                  <Field label="30 min" value={g30} onChange={setG30} />
+                  <Field label="60 min" value={g60} onChange={setG60} />
+                  <Field label="90 min" value={g90} onChange={setG90} />
+                  <Field label="120 min" value={g120} onChange={setG120} />
                 </div>
               </div>
 
               <div className="rounded-2xl border border-slate-200 p-4">
-                <div className="text-sm font-semibold text-slate-900">Insulin (mU/L)</div>
-                <div className="mt-3 grid grid-cols-2 gap-3">
-                  <Field label="0 min" value={i0} onChange={setI0} unit="mU/L" />
-                  <Field label="30 min" value={i30} onChange={setI30} unit="mU/L" />
-                  <Field label="60 min" value={i60} onChange={setI60} unit="mU/L" />
-                  <Field label="90 min" value={i90} onChange={setI90} unit="mU/L" />
-                  <Field label="120 min" value={i120} onChange={setI120} unit="mU/L" />
+                <div className="text-sm font-semibold text-slate-900 mb-3">Insulin (mU/L)</div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  <Field label="0 min" value={i0} onChange={setI0} />
+                  <Field label="30 min" value={i30} onChange={setI30} />
+                  <Field label="60 min" value={i60} onChange={setI60} />
+                  <Field label="90 min" value={i90} onChange={setI90} />
+                  <Field label="120 min" value={i120} onChange={setI120} />
                 </div>
-                <div className="mt-2 text-xs text-slate-500">
+                <div className="mt-3 text-xs text-slate-500">
                   Stumvoll equations use insulin in pmol/L (×6) and glucose in mmol/L (mg/dL ÷18).
                 </div>
               </div>
