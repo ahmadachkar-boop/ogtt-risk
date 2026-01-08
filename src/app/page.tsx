@@ -576,10 +576,37 @@ export default function App() {
     // Basic print: open a new window with preformatted text.
     const w = window.open("", "_blank", "noopener,noreferrer");
     if (!w) return;
-    w.document.write(`<!doctype html><html><head><title>$${toolName} – Summary</title>
+    w.document.write(`<!doctype html><html><head><title>${toolName} – Summary</title>
       <meta charset="utf-8"/>
-      <style>body{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; padding:24px; line-height:1.35;} pre{white-space:pre-wrap;}</style>
-      </head><body><pre>$${summary.replace(/</g, "&lt;")}</pre><script>window.print();</script></body></html>`);
+      <style>
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          padding: 40px;
+          line-height: 1.6;
+          color: #1e293b;
+          max-width: 800px;
+          margin: 0 auto;
+        }
+        h1 { font-size: 24px; margin-bottom: 8px; color: #0f172a; }
+        h2 { font-size: 16px; margin-top: 24px; margin-bottom: 8px; color: #334155; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
+        .section { margin-bottom: 16px; }
+        .label { font-weight: 600; color: #475569; }
+        .value { color: #1e293b; }
+        .warning { color: #b45309; font-weight: 600; }
+        .danger { color: #dc2626; font-weight: 600; }
+        .ok { color: #059669; }
+        ul { margin: 8px 0; padding-left: 20px; }
+        li { margin: 4px 0; }
+        .footer { margin-top: 32px; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 16px; }
+        @media print { body { padding: 20px; } }
+      </style>
+      </head><body>
+        <h1>${toolName}</h1>
+        <div style="color: #64748b; font-size: 14px; margin-bottom: 24px;">Generated: ${new Date().toLocaleString()}</div>
+        <pre style="white-space: pre-wrap; font-family: inherit; font-size: 14px;">${summary.replace(/</g, "&lt;")}</pre>
+        <div class="footer">This report is for clinical decision support only. No patient data is stored.</div>
+        <script>window.print();</script>
+      </body></html>`);
     w.document.close();
   };
 
@@ -590,20 +617,38 @@ export default function App() {
       // @ts-ignore
       const jsPDF = (mod as any).jsPDF || (mod as any).default;
       const doc = new jsPDF({ unit: "pt", format: "letter" });
-      const margin = 40;
+      const margin = 50;
       const pageW = doc.internal.pageSize.getWidth();
       const pageH = doc.internal.pageSize.getHeight();
       const maxW = pageW - margin * 2;
 
-      doc.setFont("courier", "normal");
+      // Title
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(18);
+      doc.setTextColor(15, 23, 42);
+      doc.text(toolName, margin, margin + 20);
+
+      // Timestamp
+      doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
+      doc.setTextColor(100, 116, 139);
+      doc.text(`Generated: ${new Date().toLocaleString()}`, margin, margin + 38);
+
+      // Divider line
+      doc.setDrawColor(226, 232, 240);
+      doc.line(margin, margin + 48, pageW - margin, margin + 48);
+
+      // Content
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.setTextColor(30, 41, 59);
 
       const lines = doc.splitTextToSize(summary, maxW);
-      const lineH = 13;
+      const lineH = 14;
 
-      let y = margin;
+      let y = margin + 70;
       for (let i = 0; i < lines.length; i++) {
-        if (y + lineH > pageH - margin) {
+        if (y + lineH > pageH - margin - 30) {
           doc.addPage();
           y = margin;
         }
@@ -611,9 +656,24 @@ export default function App() {
         y += lineH;
       }
 
-      doc.save(`$${toolName.replace(/\s+/g, "-")}-summary.pdf`);
+      // Footer
+      const pageCount = doc.getNumberOfPages();
+      for (let p = 1; p <= pageCount; p++) {
+        doc.setPage(p);
+        doc.setFontSize(9);
+        doc.setTextColor(100, 116, 139);
+        doc.text(
+          "Clinical decision support tool - No patient data stored",
+          margin,
+          pageH - 30
+        );
+        doc.text(`Page ${p} of ${pageCount}`, pageW - margin - 50, pageH - 30);
+      }
+
+      doc.save(`${toolName.replace(/\s+/g, "-")}-summary.pdf`);
     } catch (e) {
-      alert("PDF export requires the 'jspdf' package. Install it (npm i jspdf) and retry.");
+      console.error("PDF export error:", e);
+      alert("PDF export failed. Please try again.");
     }
   };
 
