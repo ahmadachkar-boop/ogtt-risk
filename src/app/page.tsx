@@ -573,32 +573,120 @@ export default function App() {
   }, [toolName, nAge, sex, ethnicity, bmi, ogttIndication, metabolicSyndrome, risk, step4, indices]);
 
   const printPage = () => {
+    // Parse summary into sections for nicer formatting
+    const sections = summary.split("\n\n").map(section => {
+      const lines = section.split("\n");
+      return lines;
+    });
+
     const printContent = `<!DOCTYPE html>
 <html>
 <head>
   <title>${toolName} - Summary</title>
   <meta charset="utf-8"/>
   <style>
+    * { box-sizing: border-box; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      padding: 40px;
-      line-height: 1.6;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      padding: 50px;
+      line-height: 1.5;
       color: #1e293b;
       max-width: 800px;
       margin: 0 auto;
+      font-size: 11pt;
     }
-    h1 { font-size: 24px; margin-bottom: 8px; color: #0f172a; }
-    .timestamp { color: #64748b; font-size: 14px; margin-bottom: 24px; }
-    pre { white-space: pre-wrap; font-family: inherit; font-size: 14px; margin: 0; }
-    .footer { margin-top: 32px; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 16px; }
-    @media print { body { padding: 20px; } }
+    .header {
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+    }
+    h1 {
+      font-size: 22pt;
+      margin: 0 0 8px 0;
+      color: #0f172a;
+      font-weight: 600;
+    }
+    .timestamp {
+      color: #64748b;
+      font-size: 10pt;
+    }
+    .content {
+      margin-bottom: 32px;
+    }
+    .section {
+      margin-bottom: 20px;
+      page-break-inside: avoid;
+    }
+    .section-title {
+      font-weight: 600;
+      color: #334155;
+      font-size: 11pt;
+      margin-bottom: 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .section-content {
+      color: #475569;
+      font-size: 10pt;
+    }
+    .section-content p {
+      margin: 4px 0;
+    }
+    .highlight {
+      background-color: #fef3c7;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+    .danger {
+      color: #dc2626;
+      font-weight: 600;
+    }
+    .warning {
+      color: #d97706;
+      font-weight: 500;
+    }
+    .ok {
+      color: #059669;
+    }
+    ul {
+      margin: 8px 0;
+      padding-left: 20px;
+    }
+    li {
+      margin: 4px 0;
+      font-size: 10pt;
+    }
+    .footer {
+      margin-top: 40px;
+      padding-top: 16px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 9pt;
+      color: #64748b;
+      display: flex;
+      justify-content: space-between;
+    }
+    @media print {
+      body { padding: 30px; }
+      .section { page-break-inside: avoid; }
+    }
+    @page {
+      margin: 0.75in;
+    }
   </style>
 </head>
 <body>
-  <h1>${toolName}</h1>
-  <div class="timestamp">Generated: ${new Date().toLocaleString()}</div>
-  <pre>${summary.replace(/</g, "&lt;")}</pre>
-  <div class="footer">This report is for clinical decision support only. No patient data is stored.</div>
+  <div class="header">
+    <h1>${toolName}</h1>
+    <div class="timestamp">Generated: ${new Date().toLocaleString()}</div>
+  </div>
+  <div class="content">
+    <pre style="white-space: pre-wrap; font-family: inherit; font-size: 10pt; line-height: 1.6; margin: 0;">${summary.replace(/</g, "&lt;").replace(/HIGH RISK/g, '<span class="danger">HIGH RISK</span>').replace(/OGTT indicated/g, '<span class="warning">OGTT indicated</span>').replace(/Metabolic syndrome present/g, '<span class="warning">Metabolic syndrome present</span>')}</pre>
+  </div>
+  <div class="footer">
+    <span>Clinical decision support tool - No patient data stored</span>
+    <span>${toolName}</span>
+  </div>
 </body>
 </html>`;
 
