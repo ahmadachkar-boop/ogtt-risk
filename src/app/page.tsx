@@ -89,7 +89,7 @@ function Field({
       <label className="text-sm font-medium text-slate-800">{label}</label>
       <div className="flex items-center gap-2">
         <input
-          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-200"
+          className="flex-1 min-w-[80px] rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-200"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
