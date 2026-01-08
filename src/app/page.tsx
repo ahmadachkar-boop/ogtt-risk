@@ -715,17 +715,41 @@ export default function App() {
       const pageH = doc.internal.pageSize.getHeight();
       const maxW = pageW - margin * 2;
 
+      // Sanitize text for PDF (replace Unicode with ASCII equivalents)
+      const sanitizeForPDF = (text: string): string => {
+        return text
+          .replace(/—/g, "-")           // em dash
+          .replace(/–/g, "-")           // en dash
+          .replace(/²/g, "2")           // superscript 2
+          .replace(/≤/g, "<=")          // less than or equal
+          .replace(/≥/g, ">=")          // greater than or equal
+          .replace(/×/g, "x")           // multiplication sign
+          .replace(/·/g, ".")           // middle dot
+          .replace(/β/g, "beta")        // Greek beta
+          .replace(/μ/g, "u")           // Greek mu
+          .replace(/°/g, " degrees")    // degree symbol
+          .replace(/±/g, "+/-")         // plus minus
+          .replace(/→/g, "->")          // arrow
+          .replace(/←/g, "<-")          // arrow
+          .replace(/\u2013/g, "-")      // en dash unicode
+          .replace(/\u2014/g, "-")      // em dash unicode
+          .replace(/\u00B2/g, "2")      // superscript 2 unicode
+          .replace(/[^\x00-\x7F]/g, ""); // remove any remaining non-ASCII
+      };
+
+      const cleanSummary = sanitizeForPDF(summary);
+
       // Title
       doc.setFont("helvetica", "bold");
       doc.setFontSize(18);
       doc.setTextColor(15, 23, 42);
-      doc.text(toolName, margin, margin + 20);
+      doc.text("OGTT-DM Risk Stratifier", margin, margin + 20);
 
       // Timestamp
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
       doc.setTextColor(100, 116, 139);
-      doc.text(`Generated: ${new Date().toLocaleString()}`, margin, margin + 38);
+      doc.text("Generated: " + new Date().toLocaleString(), margin, margin + 38);
 
       // Divider line
       doc.setDrawColor(226, 232, 240);
@@ -736,7 +760,7 @@ export default function App() {
       doc.setFontSize(10);
       doc.setTextColor(30, 41, 59);
 
-      const lines = doc.splitTextToSize(summary, maxW);
+      const lines = doc.splitTextToSize(cleanSummary, maxW);
       const lineH = 14;
 
       let y = margin + 70;
@@ -749,7 +773,7 @@ export default function App() {
         y += lineH;
       }
 
-      // Footer
+      // Footer on each page
       const pageCount = doc.getNumberOfPages();
       for (let p = 1; p <= pageCount; p++) {
         doc.setPage(p);
@@ -760,10 +784,10 @@ export default function App() {
           margin,
           pageH - 30
         );
-        doc.text(`Page ${p} of ${pageCount}`, pageW - margin - 50, pageH - 30);
+        doc.text("Page " + p + " of " + pageCount, pageW - margin - 50, pageH - 30);
       }
 
-      doc.save(`${toolName.replace(/\s+/g, "-")}-summary.pdf`);
+      doc.save("OGTT-DM-Risk-Stratifier-summary.pdf");
     } catch (e) {
       console.error("PDF export error:", e);
       alert("PDF export failed. Please try again.");
